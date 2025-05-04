@@ -23,3 +23,5 @@ openpyxl==3.1.2        # if working with Excel files
 
 # Mordred compatibility
 typing-extensions==4.11.0
+
+python-3.10
