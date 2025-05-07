@@ -13,6 +13,17 @@ from sklearn.metrics import mean_squared_error, r2_score
 import joblib
 import streamlit as st
 
+st.set_page_config(
+    page_title="cGAS-AID",
+    page_icon="🧬",
+    layout="wide"
+)
+
+# Now you can start the rest of your app
+st.title("cGAS-AID: Bioactivity Predictor for cGAS enzyme")
+# ... rest of your code ...
+
+
 def fetch_chembl_data(target_id="CHEMBL4105728"):
     url = f'https://www.ebi.ac.uk/chembl/api/data/activity.json?target_chembl_id={target_id}&limit=1000'
     response = requests.get(url)
