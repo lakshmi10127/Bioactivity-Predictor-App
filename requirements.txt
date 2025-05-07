@@ -1,10 +1,9 @@
-python==3.10
 pandas==2.2.3
 numpy==2.2.5
 seaborn==0.13.2
 matplotlib==3.8.4
 requests==2.32.3
-rdkit==2022.09.5
+rdkit-pypi==2022.9.5
 scikit-learn==1.4.2
 joblib==1.4.2
 streamlit==1.45.0
