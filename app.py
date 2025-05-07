@@ -1,9 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[1]:
-
-
 import os
 import pandas as pd
 import numpy as np
@@ -46,18 +40,23 @@ data = data.dropna()
 X = np.array(data['Descriptors'].tolist())
 y = data['pchembl_value'].astype(float)
 
+# Plot bioactivity distribution
 sns.histplot(y, bins=30)
 plt.title("Bioactivity Distribution")
 plt.xlabel("pChEMBL Value")
-plt.show()
+st.pyplot()  # Use Streamlit's st.pyplot() for rendering matplotlib plots
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
+# Train Random Forest model
 rf_model = RandomForestRegressor(n_estimators=100, random_state=42)
 rf_model.fit(X_train, y_train)
+
+# Train Support Vector Machine model
 svm_model = SVR()
 svm_model.fit(X_train, y_train)
 
+# Evaluate models
 y_pred_rf = rf_model.predict(X_test)
 y_pred_svm = svm_model.predict(X_test)
 
@@ -69,34 +68,33 @@ r2_svm = r2_score(y_test, y_pred_svm)
 print(f'Random Forest - MSE: {mse_rf}, R2: {r2_rf}')
 print(f'SVM - MSE: {mse_svm}, R2: {r2_svm}')
 
-joblib.dump(rf_model, "cGAS_model.pkl")
-joblib.dump(svm_model, "cGAS_model.pkl")
+# Save models
+joblib.dump(rf_model, "rf_model.pkl")
+joblib.dump(svm_model, "svm_model.pkl")
+
+# Model loading function with error handling
+def load_model(model_name):
+    try:
+        model = joblib.load(model_name)
+        return model
+    except FileNotFoundError:
+        st.error(f"Model file {model_name} not found. Please ensure it's available in the environment.")
+        return None
 
 def predictor_app():
     st.title("Bioactivity Predictor for cGAS")
     model_choice = st.selectbox("Select Model", ["Random Forest", "SVM"])
     smiles = st.text_input("Enter SMILES:")
+    
     if smiles:
         desc = smiles_to_descriptors(smiles)
         if None in desc:
             st.error("Invalid SMILES")
         else:
-            model = joblib.load("rf_model.pkl") if model_choice == "Random Forest" else joblib.load("svm_model.pkl")
-            pred = model.predict([desc])[0]
-            st.success(f"Predicted Bioactivity (pChEMBL): {pred}")
+            model = load_model("rf_model.pkl") if model_choice == "Random Forest" else load_model("svm_model.pkl")
+            if model:
+                pred = model.predict([desc])[0]
+                st.success(f"Predicted Bioactivity (pChEMBL): {pred}")
 
 if __name__ == '__main__':
     predictor_app()
-
-
-# In[5]:
-
-
-get_ipython().system('jupyter nbconvert --to script app.ipynb')
-
-
-# In[ ]:
-
-
-
-
